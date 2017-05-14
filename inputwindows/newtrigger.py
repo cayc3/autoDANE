@@ -1,5 +1,5 @@
-from PyQt4.QtCore import pyqtSignature
-from PyQt4.QtGui import QDialog, QMessageBox
+from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtWidgets import QDialog, QMessageBox
 
 from .Ui_newtrigger import Ui_Dialog
 
@@ -8,9 +8,9 @@ class NewTrigger(QDialog, Ui_Dialog):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         self.setupUi(self)
-        
+
     db = None
-    
+
     categories = { "":-1 }
     triggers = { "":-1 }
     def setup(self):
@@ -21,7 +21,7 @@ class NewTrigger(QDialog, Ui_Dialog):
             self.categories[row[1]] = row[0]
             self.cmbCategory.addItem(row[1])
         cursor.close()
-        
+
         self.cmbTriggers.addItem("")
         cursor = self.db.cursor()
         cursor.execute ("select id, trigger_name from trigger_descriptions")
@@ -29,15 +29,15 @@ class NewTrigger(QDialog, Ui_Dialog):
             self.triggers[row[1]] = row[0]
             self.cmbTriggers.addItem(row[1])
         cursor.close()
-        
-        
+
+
     def validate(self):
         if self.cmbTriggers.currentText() != "" and self.txtValueMask.text() != "" and self.cmbCategory.currentText() != "" and self.cmbTasks.currentText() != "":
             return True
         else:
             return False
-    
-    @pyqtSignature("")
+
+    @pyqtSlot()
     def on_btnSave_clicked(self):
         if self.validate():
             cursor = self.db.cursor()
@@ -49,13 +49,13 @@ class NewTrigger(QDialog, Ui_Dialog):
             self.accept()
         else:
             QMessageBox.information(self, "Information", "You need to fill in all the fields")
-    
-    @pyqtSignature("")
+
+    @pyqtSlot()
     def on_btnCancel_clicked(self):
         self.reject()
-    
+
     tasks = { "":-1 }
-    @pyqtSignature("int")
+    @pyqtSlot("int")
     def on_cmbCategory_currentIndexChanged(self, index):
         self.tasks = { "":-1 }
         self.cmbTasks.clear()
