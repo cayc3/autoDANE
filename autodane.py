@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
-from PyQt4 import *
-from PyQt4.QtCore import *
-from PyQt4.QtGui import QApplication
+from PyQt5 import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import QApplication
 
 from splash.dbconnecting import DBConnecting
 from initialoptions.choosefootprint import ChooseFootprint
