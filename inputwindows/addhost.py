@@ -1,5 +1,5 @@
-from PyQt4.QtCore import pyqtSignature
-from PyQt4.QtGui import QDialog, QMessageBox
+from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtWidgets import QDialog, QMessageBox
 
 from .Ui_addhost import Ui_Dialog
 
@@ -7,7 +7,7 @@ class wndAddHost(QDialog, Ui_Dialog):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         self.setupUi(self)
- 
+
     def valid(self):
         res = False
         try:
@@ -17,16 +17,16 @@ class wndAddHost(QDialog, Ui_Dialog):
                     res = True
         except:
             res = False
-            
+
         return res
-        
-    @pyqtSignature("")
+
+    @pyqtSlot()
     def on_btnOK_clicked(self):
         if self.valid() == True:
             self.accept()
         else:
             QMessageBox.information(self, "Information", "That's not a valid IP")
-    
-    @pyqtSignature("")
+
+    @pyqtSlot()
     def on_btnCancel_clicked(self):
         self.reject()
