@@ -1,5 +1,6 @@
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 import base64
 import thread
@@ -39,18 +40,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.updateTaskListTrigger.connect(self.handleUpdateTaskListTrigger)
         self.updateCredsTrigger.connect(self.handleUpdateCredsTrigger)
 
-        logoPixmap = QPixmap(QString.fromUtf8('images/logo.png'))
+        logoPixmap = QPixmap('images/logo.png')
         logoScaledPixmap = logoPixmap.scaled(self.lblSensePostLogo.size(),  Qt.KeepAspectRatio)
         self.lblSensePostLogo.setPixmap(logoScaledPixmap)
 
-        emailPixmap = QPixmap(QString.fromUtf8('images/email.png'))
+        emailPixmap = QPixmap('images/email.png')
         emailScaledPixmap = emailPixmap.scaled(self.lblEmailIcon.size(),  Qt.KeepAspectRatio)
         self.lblEmailIcon.setPixmap(emailScaledPixmap)
 
         emailScaledPixmap = emailPixmap.scaled(self.lblEmailIcon2.size(),  Qt.KeepAspectRatio)
         self.lblEmailIcon2.setPixmap(emailScaledPixmap)
 
-        skypePixmap = QPixmap(QString.fromUtf8('images/skype.png'))
+        skypePixmap = QPixmap('images/skype.png')
         skypeScaledPixmap = skypePixmap.scaled(self.lblSkypeLogo.size(),  Qt.KeepAspectRatio)
         self.lblSkypeLogo.setPixmap(skypeScaledPixmap)
 
@@ -94,7 +95,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.cmbLogsCategory.addItems(categories)
 
-    @pyqtSignature("QString")
+    @pyqtSlot("QString")
     def on_cmbLogsCategory_currentIndexChanged(self, p0):
         tasks = [""]
         sqlTasks = "select td.task_name from task_categories tc join task_descriptions td on tc.id = td.task_categories_id where tc.category = %s and td.enabled = true order by task_name"
@@ -217,7 +218,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except:
             pass
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnImportLoot_clicked(self):
         w = wndTextInput()
         w.setWindowTitle("Enter loot file name")
@@ -225,7 +226,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             thread.start_new_thread(
                 self.importHashesFromLoot, (w.txtDomain.text(), w.txtLootFileName.text(), ))
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnAddHost_clicked(self):
         w = wndAddHost()
         if w.exec_():
@@ -234,7 +235,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             cursor.execute("select addHost(%s, %s::varchar, ''::varchar, false)", (self.footprint_id, str(w.txtIPAddress.text()), ))
             cursor.close()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnAddDomainCreds_clicked(self):
         w = wndAddDomainCreds()
         if w.exec_():
@@ -248,7 +249,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                 self.footprint_id, str(w.txtDomain.text()), str(w.txtUsername.text()), ))
                 cursor.close()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnOpenRDPSession_clicked(self):
         try:
             index = self.tvHosts.selectedIndexes()[0]
@@ -272,7 +273,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def runCmd(self, cmd):
         os.popen(cmd)
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnRerunTask_clicked(self):
         w = wndConfirmation()
         if w.exec_():
@@ -287,7 +288,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return v=='0' or (v if v.find('..') > -1 else v.lstrip('-+').rstrip('0').rstrip('.')).isdigit()
 
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnSearchHosts_clicked(self):
         filterValue = self.cmbHostFilterField.currentText()
         sql = ""
@@ -329,7 +330,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnSearchLogs_clicked(self):
         self.taskLogs = []
         self.tblTaskLogs.setRowCount(0)
@@ -357,7 +358,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     task_log_index = -1
 
-    @pyqtSignature("int, int, int, int")
+    @pyqtSlot("int, int, int, int")
     def on_tblTaskLogs_currentCellChanged(self, row, currentColumn, previousRow, previousColumn):
         try:
             clean = lambda dirty: ''.join(
@@ -432,14 +433,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             try:
                 c3.execute(sql3, (self.footprint_id, row[1], self.footprint_id, row[1], ))
                 value = str(c3.fetchone()[0])
-                
+
                 #c3.close()
             except:
                 # print "division by 0, so 0"
                 pass
             finally:
                 c3.close()
-            
+
             self.tblDomains.setItem(self.tblDomains.rowCount() - 1, 2, QTableWidgetItem(str(value.split(".")[0].replace("None", "0""") + " %")))
         self.tblDomains.resizeColumnsToContents()
         cursor.close()
@@ -527,13 +528,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.tvHostsModel.appendRow(node)
         cursor.close()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnUpdateHosts_clicked(self):
         self.tblHostPorts.setRowCount(0)
         self.tblHostVulns.setRowCount(0)
         self.updateHostsTreeview()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnUpdateSummary_clicked(self):
         self.updatePortsSummary()
         self.updateVulnSummary()
@@ -545,7 +546,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             threading.Timer(self.updateSummaryInterval,
                             self.callUpdateSummaryTrigger).start()
 
-    @pyqtSignature("int")
+    @pyqtSlot("int")
     def on_cbxUpdateSummary_stateChanged(self, p0):
         if p0:
             threading.Timer(self.updateSummaryInterval,
@@ -569,7 +570,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     exploit_logs = []
 
-    @pyqtSignature("QModelIndex")
+    @pyqtSlot("QModelIndex")
     def on_tvHosts_clicked(self, index):
         self.clearHostData()
         node = index.model().itemFromIndex(index)
@@ -742,14 +743,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.tblDomainCreds.resizeColumnsToContents()
             cursor.close()
 
-    @pyqtSignature("int, int, int, int")
+    @pyqtSlot("int, int, int, int")
     def on_tblExploitLogs_currentCellChanged(self, row, currentColumn, previousRow, previousColumn):
         logtext = self.exploit_logs[row]
         clean = lambda dirty: ''.join(
             filter(string.printable.__contains__, dirty))
         self.txtExploitLog.setText(clean(base64.b64decode(logtext)))
 
-    @pyqtSignature("int, int, int, int")
+    @pyqtSlot("int, int, int, int")
     def on_tblDomainGroups_currentCellChanged(self, row, currentColumn, previousRow, previousColumn):
         #        try:
         if True:
@@ -797,7 +798,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #        except:
 #            pass
 
-    @pyqtSignature("int, int, int, int")
+    @pyqtSlot("int, int, int, int")
     def on_tblDomains_2_currentCellChanged(self, row, currentColumn, previousRow, previousColumn):
         domain = ""
         try:
@@ -852,7 +853,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tblDomainGroups.resizeColumnsToContents()
         cursor.close()
 
-    @pyqtSignature("int, int, int, int")
+    @pyqtSlot("int, int, int, int")
     def on_tblWebsites_currentCellChanged(self, row, currentColumn, previousRow, previousColumn):
         if row == -1:
             self.lblWebsitesScreenshot.clear()
@@ -927,11 +928,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             pass
         self.updateCredsTrigger.emit()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnSyncJohnPotFile_clicked(self):
         thread.start_new_thread(self.syncCredsWithPotFile, ())
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnUpdateCreds_clicked(self):
         sqlAllDomainCreds = "select distinct domain, username, cleartext_password, lm_hash, ntlm_hash from domain_credentials where footprint_id = %s order by domain, username"
         sqlValidDomainCreds = "select hd.ip_address, dc.domain, dc.username, dc.cleartext_password from domain_credentials_map m join host_data hd on hd.id = m.host_data_id join domain_credentials dc on dc.id = m.domain_credentials_id where hd.footprint_id = %s and m.valid = %s"
@@ -1044,7 +1045,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.tblTokens.resizeColumnsToContents()
         cursor.close()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnUpdateDomains_clicked(self):
         self.tblDomains_2.setRowCount(0)
         cursor = self.db.cursor()
@@ -1057,11 +1058,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tblDomains_2.resizeColumnsToContents()
         cursor.close()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnUpdateWebsites_clicked(self):
         self.updateWebsites()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnUpdateVulns_clicked(self):
         sql = """
             select
@@ -1083,7 +1084,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.tvVulnsModel.appendRow(node)
         cursor.close()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnUpdateTaskList_clicked(self):
         sql = """
         select
@@ -1173,25 +1174,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             threading.Timer(self.updateTaskListInterval,
                             self.callUpdateTaskListTrigger).start()
 
-    @pyqtSignature("int")
+    @pyqtSlot("int")
     def on_cbxUpdateTaskList_stateChanged(self, p0):
         if p0:
             threading.Timer(self.updateTaskListInterval,
                             self.callUpdateTaskListTrigger).start()
 
-    @pyqtSignature("int")
+    @pyqtSlot("int")
     def on_checkBox_stateChanged(self, p0):
         self.frame.setVisible(p0)
 
-    @pyqtSignature("int")
+    @pyqtSlot("int")
     def on_cbxTaskLogsFilterVisible_stateChanged(self, p0):
         self.frameLogFilter.setVisible(p0)
 
-    @pyqtSignature("int")
+    @pyqtSlot("int")
     def on_cbxHostsFilterVisible_stateChanged(self, p0):
         self.frameHostsFilter.setVisible(p0)
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnStopWorkers_clicked(self):
         for wt in self.workerThreads:
             try:
@@ -1199,7 +1200,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             except:
                 pass
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_btnRefreshVulnerabilitiesTab_clicked(self):
         currentValue = self.cmbVulnerabilities.currentText()
 
@@ -1226,7 +1227,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.cmbVulnerabilities.setCurrentIndex(
             self.cmbVulnerabilities.findText(currentValue, Qt.MatchExactly))
 
-    @pyqtSignature("QString")
+    @pyqtSlot("QString")
     def on_cmbVulnerabilities_currentIndexChanged(self, p0):
         self.tblVulnerableHosts.setRowCount(0)
         cursor = self.db.cursor()
