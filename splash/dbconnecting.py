@@ -1,10 +1,8 @@
-from PyQt4 import QtGui,  QtCore
-from PyQt4.QtCore import pyqtSignature, pyqtSignal
-from PyQt4.QtGui import *
+from PyQt5 import QtGui,  QtCore, QtWidgets
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
-
-from PyQt4.QtCore import QString
-#from PyQt4.QtGui import QApplication
 
 import ConfigParser
 import threading
@@ -20,7 +18,7 @@ class DBConnecting(QDialog, Ui_Dialog):
     connectedToDB = False
     errorMessage = ""
     conf = ConfigParser.ConfigParser()
-    
+
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         self.setupUi(self)
@@ -28,8 +26,8 @@ class DBConnecting(QDialog, Ui_Dialog):
         self.tickLabelTimerTrigger.connect(self.handletickLabelTimerTrigger)
         self.tickLabelTimer = threading.Timer(0.5, self.calltickLabelTimerTrigger)
         self.tickLabelTimer.start()
-        
-        logoPixmap = QtGui.QPixmap(QString.fromUtf8('images/db-connection.jpg'))
+
+        logoPixmap = QtGui.QPixmap('images/db-connection.jpg')
         logoScaledPixmap = logoPixmap.scaled(self.lblDBLogo.size(),  QtCore.Qt.KeepAspectRatio)
         self.lblDBLogo.setPixmap(logoScaledPixmap)
 
@@ -54,7 +52,7 @@ class DBConnecting(QDialog, Ui_Dialog):
 
             self.label.setText("Connecting " + self.currentDotsVal)
             self.lblError.setText(self.errorMessage)
-            
-    @pyqtSignature("")
+
+    @pyqtSlot()
     def on_btnCancel_clicked(self):
         self.reject()
