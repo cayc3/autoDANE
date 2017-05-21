@@ -1,0 +1,32 @@
+#!/bin/bash
+
+sudo port install postgresql96 postgresql96-server py27-psycopg2 py27-msgpack py27-twisted wkhtmltopdf openssl libffi
+
+pip install netifaces
+pip install docxtpl
+pip install impacket
+pip install crackmapexec
+
+git clone git://github.com/SpiderLabs/msfrpc.git msfrpc
+cd msfrpc/python-msfrpc/
+python setup.py install
+cd ../..
+rm -r msfrpc/
+
+wget https://downloads.wkhtmltopdf.org/0.12/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz
+tar -xvf wkhtmltox-0.12.3_linux-generic-amd64.tar.xz
+sudo cp -r wkhtmltox/bin/* /opt/local/bin/
+sudo cp -r wkhtmltox/include/* /opt/local/include/
+sudo cp -r wkhtmltox/lib/* /opt/local/lib/
+sudo cp -r wkhtmltox/share/* /opt/local/share/
+rm -r wkhtmltox/
+
+#service postgresql start
+sudo -u postgres psql -c "create user autodane with password 'OHZdz7CW8Lv4PCa';"
+sudo -u postgres psql < createdb.sql
+sudo -u postgres psql autodane < createdbstructure.sql
+sudo -u postgres psql autodane -c "grant all privileges on all tables in schema public to autodane"
+sudo -u postgres psql autodane -c "grant all privileges on all sequences in schema public to autodane"
+
+mkdir temp
+mkdir logs
